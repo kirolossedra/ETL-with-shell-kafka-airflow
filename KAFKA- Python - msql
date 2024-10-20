@@ -1,0 +1,127 @@
+Here’s a structured guide to setting up Kafka, MySQL, and creating a data pipeline for toll data, formatted in Markdown for clarity.
+
+---
+
+# Setting Up Kafka, MySQL, and Data Pipeline for Toll Data
+
+## Exercise 1: Download and Extract Kafka
+
+1. **Download Kafka:**
+   ```bash
+   wget https://downloads.apache.org/kafka/3.7.0/kafka_2.12-3.7.0.tgz
+   ```
+
+2. **Extract Kafka from the zip file:**
+   ```bash
+   tar -xzf kafka_2.12-3.7.0.tgz
+   ```
+   > **Note:** This command creates a directory named `kafka_2.12-3.7.0` in the current directory.
+
+---
+
+## Exercise 2: Configure KRaft and Start Server
+
+1. **Change to the Kafka directory:**
+   ```bash
+   cd kafka_2.12-3.7.0
+   ```
+
+2. **Generate a cluster UUID:**
+   ```bash
+   KAFKA_CLUSTER_ID="$(bin/kafka-storage.sh random-uuid)"
+   ```
+   > **Note:** The new cluster ID will be used by the KRaft controller.
+
+3. **Configure the log directories:**
+   ```bash
+   bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c config/kraft/server.properties
+   ```
+
+4. **Start the Kafka server:**
+   ```bash
+   bin/kafka-server-start.sh config/kraft/server.properties
+   ```
+   > **Note:** You should see messages indicating that the Kafka server started successfully, along with logs loaded.
+
+---
+
+## Exercise 3: Start MySQL Server and Setup the Database
+
+1. **Open MySQL Page in IDE.**
+2. **Start the MySQL server by clicking the Start button.**
+3. **Copy the password from the Connection Information tab.**
+
+4. **Connect to the MySQL server:**
+   ```bash
+   mysql --host=mysql --port=3306 --user=root --password=Replace_your_password
+   ```
+
+5. **Create a database named `tolldata`:**
+   ```sql
+   create database tolldata;
+   ```
+
+6. **Create a table named `livetolldata`:**
+   ```sql
+   use tolldata;
+   create table livetolldata(timestamp datetime, vehicle_id int, vehicle_type char(15), toll_plaza_id smallint);
+   ```
+   > **Note:** This table will store all streamed data from Kafka.
+
+7. **Disconnect from the MySQL server:**
+   ```sql
+   exit;
+   ```
+
+---
+
+## Exercise 4: Install the Python Packages
+
+1. **Install `kafka-python`:**
+   ```bash
+   pip3 install kafka-python
+   ```
+
+2. **Install `mysql-connector-python`:**
+   ```bash
+   pip3 install mysql-connector-python==8.0.31
+   ```
+   > This module helps interact with the MySQL server.
+
+---
+
+## Exercise 5: Create Data Pipeline for Toll Data
+
+1. **Create a Kafka topic named `toll`.**
+
+2. **Download the toll traffic generator script:**
+   ```bash
+   wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/toll_traffic_generator.py
+   ```
+
+3. **Open the `toll_traffic_generator.py` in an editor and set the topic to `toll`.**
+
+4. **Run the toll traffic generator:**
+   ```bash
+   python3 toll_traffic_generator.py
+   ```
+
+5. **Download the streaming data reader script:**
+   ```bash
+   wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/vVxmU5uatDowvAIKRZrFjg/streaming-data-reader.py
+   ```
+
+6. **Open `streaming-data-reader.py` and modify the following details:**
+   - **TOPIC**
+   - **DATABASE**
+   - **USERNAME**
+   - **PASSWORD**
+
+7. **Run the streaming data reader:**
+   ```bash
+   python3 streaming-data-reader.py
+   ```
+
+---
+
+This guide should help you set up your environment effectively! If you have any questions or need further assistance, feel free to ask.
